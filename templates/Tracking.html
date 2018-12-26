@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask-SocketIO Test</title>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="all" />
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+           var res = "";
+           var NameEmploy ;
+           var EntryTime
+           namespace = '/tracking';
+           var socket = io.connect(location.protocol + '//' + 'localhost' + ':' + location.port + namespace);
+       
+           socket.on('my_response', function(msg) {
+            obj = JSON.parse(msg);
+            NameEmploy = obj.NameEmploy; // EmployName
+            EntryTime = obj.EntryTime;
+            var str1 = "/static/image/";
+            var str2 = String(obj.ImageID);
+            var str3 = ".jpg";
+            res = str1.concat(str2, str3);
+        });
+           socket.on('image_response', function(msg) {
+            obj = JSON.parse(msg);
+            if(obj.Image_status == "true"){
+                var table = document.getElementById("myTable");
+                var row = table.insertRow(1);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                cell1.innerHTML = NameEmploy;
+                cell2.innerHTML = EntryTime;
+                var img = document.createElement('img');
+                img.src = res; 
+                img.setAttribute("width", "300");
+                img.setAttribute("height", "400");
+                cell3.appendChild(img);
+                res = "";
+                NameEmploy = null;
+                EntryTime = null;
+
+            }
+        });
+           socket.on('LoadWork_data', function(msg) {
+            // console.log(msg)
+            var table = document.getElementById("myTable");
+            while (table.rows.length > 1) {
+               table.deleteRow(1);
+            }
+            for(var i of msg) {
+                var row = table.insertRow(1);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                cell1.innerHTML = i.EmployeeName;
+                cell2.innerHTML = i.EntryTime;
+                var img = document.createElement('img');
+                var str1 = "/static/image/";
+                var str2 = String(i.ImageID);
+                var str3 = ".jpg";
+                res = str1.concat(str2, str3);
+                img.src = res; 
+                img.setAttribute("width", "300");
+                img.setAttribute("height", "400");
+                cell3.appendChild(img);
+                res = "";
+                NameEmploy = null;
+                EntryTime = null;
+            }
+        });
+
+           document.getElementById("mydate").addEventListener("change", function(e){
+            socket.emit('GetDate', e.target.value);
+        });
+       });
+   </script>
+</head>
+<body>
+    <div style="width: 100%;height:2000px;overflow-y: scroll">
+        <div style="display: flex;align-items: center;justify-content: center;">
+            <input id="mydate" type="date"/>
+        </div>
+        <table id="myTable" style="width:100%;height:auto;">  
+            <tr>
+                <th class="centerText">Tên Nhân Viên</th> 
+                <th class="centerText">Thời Gian</th> 
+                <th class="centerText">Hình</th>
+            </tr>
+        </table>
+
+    </div>
+    
+</body>
+</html>
+
+<!-- TODO:  -->

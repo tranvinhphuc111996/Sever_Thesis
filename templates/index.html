@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+	overflow: hidden;
+	border: 1px solid #ccc;
+	background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+	background-color: inherit;
+	float: left;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	padding: 14px 16px;
+	transition: 0.3s;
+	font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+	background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+	background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+	display: none;
+	padding: 6px 12px;
+	border: 1px solid #ccc;
+	border-top: none;
+}
+</style>
+<script>
+ 	function resizeIframe(obj) {
+		obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+	}
+</script>
+</head>
+<body>
+<div class="tab">
+  <button class="tablinks" onclick="switch_tab(0)">Thêm nhân viên</button>
+  <button class="tablinks" onclick="switch_tab(1)">Danh sách nhân viên</button>
+  <!-- <button class="tablinks" onclick="switch_tab(2)">Thêm thiết bị</button> -->
+  <button class="tablinks" onclick="switch_tab(3)">Danh sách thiết bị</button>
+  <button class="tablinks" onclick="switch_tab(4)">Tracking</button>
+  <button class="tablinks" onclick="switch_tab(5)">Đăng xuất</button>
+</div>
+<iframe id="tab_iframe" src="/danh_sach_nhan_vien" height="100%" width="100%" frameborder="0" onload=resizeIframe(this) scrolling="no"></iframe> 
+<script>
+function switch_tab(tabid) {
+	tab_iframe = document.getElementById("tab_iframe");
+	switch (tabid) {
+		case 0:
+			tab_iframe.src 		= "/them_nhan_vien"
+		break;
+
+		case 1:
+			tab_iframe.src 		= "/danh_sach_nhan_vien"
+		break;
+
+		// case 2:
+		// 	tab_iframe.src 		= "/them_thiet_bi"
+		// break;
+
+		case 3:
+			tab_iframe.src 		= "/danh_sach_thiet_bi"
+		break;
+
+		case 4:
+			tab_iframe.src 		= "/Tracking"
+		break;
+		case 6:
+			document.location 	= "/dang_xuat"
+		break;
+	}
+}
+</script> 
+</body>
+</html> 

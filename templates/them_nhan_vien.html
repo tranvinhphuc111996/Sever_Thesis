@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<title>Thêm nhân viên</title>
+	<script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+	<link rel="stylesheet" href="/static/style.css" type="text/css" media="all" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://use.fontawesome.com/releases/v5.6.3/js/all.js" data-auto-replace-svg="nest"></script>
+	<script type="text/javascript" charset="utf-8">
+		$(document).ready(function() {
+
+			var a = "/register"
+			var socket = io.connect(location.protocol + '//' + 'localhost' + ':' + location.port + a);
+
+			socket.on('connect',function(){
+				console.log("Connected !!!");
+				socket.emit('get_id_signal');
+			});
+
+			socket.on('get_device',function(msg){
+				
+				for (var i of msg) {
+					console.log(i);
+					var x = document.getElementById("mySelect_device");
+					var option = document.createElement("option");
+					option.text = String(i['Description']);
+					option.value = String(i['Description']);
+					x.add(option);
+				}
+			});
+
+			socket.on('get_id',function(msg){
+
+				console.log(msg);
+			});
+			socket.on('get_id_web', function(msg) {
+				obj = JSON.parse(msg);
+				console.log(msg.data);
+        		CardID = obj.CardID; // EmployName
+        		var text = $('#mathe');
+        		text.val(String(CardID));
+        	});
+			socket.on('get_finger_web', function(msg) {
+				obj = JSON.parse(msg);
+				
+        		FingerID = obj.FingerID; // EmployName
+        		var text = $('#FingerID');
+        		text.val(String(FingerID));
+        	});
+			$("#myBtn").on("click", function(){
+				var x = document.getElementById("myBtn");
+				x.disabled = true;
+				var valueOfSelect = document.getElementById("mySelect_device").value;
+			 	// Choose device and get RFID tag
+			 	socket.emit('get_location_signal',valueOfSelect)
+			 }); 
+		});
+
+	</script>
+
+</head>
+<body>
+
+	<h2>Thêm nhân viên</h2>
+	
+	<form class="form" method="POST">
+		
+		<p class="hoten">
+			<input type="text" name="hoten" id="hoten" placeholder="Trần Văn Tèo" />
+			<label for="hoten">Họ tên</label>
+		</p>
+		
+		<p class="mathe">
+			<input type="text" name="mathe" id="mathe" placeholder="Mã Thẻ" />
+			<input type="text" name="FingerID" id="FingerID" placeholder="Thứ tự mã Vân Tay" />
+			<select id="mySelect_device">	
+				<option selected disabled>Địa Điểm Quản Lý</option>
+			</select>
+			<button type="button" id="myBtn"><i class="fas fa-angle-double-up"></i></button>
+		</p>
+		
+		<p class="ngaysinh">
+			<input type="text" name="ngaysinh" id="ngaysinh" placeholder="13-12-1996" />
+			<label for="ngaysinh">Ngày sinh</label>
+		</p>
+
+
+		<p class="submit">
+			<input type="submit" name="Submit_button" value="Register" />
+		</p>
+	</form>
+
+</body>
+
+</html>
+

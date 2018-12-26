@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/static/style.css" type="text/css" media="all" />
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<h2>Danh sách nhân viên</h2>
+
+<table id="myTable", style="width:50%">
+  <tr>
+    <th class="centerText">Họ tên</th>
+    <th class="centerText">Ngày sinh</th>
+    <th class="centerText">Mã thẻ</th> 
+    <th class="centerText">Thao tác</th>
+  </tr>
+  {% for nhanvien in ds_nhanvien %}
+  <tr>
+      <td><input type="text" id="hoten_{{ loop.index }}" name="hoten" value="{{ nhanvien['hoten']|safe }}"/></td>
+      <td><input type="text" id="ngaysinh_{{ loop.index }}" name="ngaysinh" value="{{ nhanvien['ngaysinh']|safe }}"/></td>
+      <td><div id="div_mathe_{{ loop.index }}">{{ nhanvien['mathe']|safe }}</div></td> 
+      <td class="centerText">
+        <button class="action_button" button_type="edit" index="{{ loop.index }}">sửa</button>
+        <button class="action_button" button_type="delete" index="{{ loop.index }}">xóa</button>
+      </td>
+  </tr>
+  {% endfor %}
+</table>
+<script>
+  /*TODO
+  kiểm tra lỗi
+  thông báo sửa 
+  thành công
+  */
+  function sua_thong_tin_nhan_vien(mathe, hoten, ngaysinh) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "/json/sua_thong_tin_nhan_vien", true)
+    xhttp.setRequestHeader('Content-Type', 'application/json')
+    //any security issue ???
+    json_data = JSON.stringify( {'mathe': mathe, 'hoten': hoten, 'ngaysinh': ngaysinh} )
+    xhttp.send(json_data); 
+  }
+
+  function xoa_nhan_vien(mathe) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "/json/xoa_nhan_vien", true)
+    xhttp.setRequestHeader('Content-Type', 'application/json')
+    //any security issue ???
+    json_data = JSON.stringify( {'mathe': mathe} )
+    xhttp.send(json_data); 
+  }
+  /*
+    only run after page finish loading
+  */
+  function button_click(e) {
+    button_index = e.target.getAttribute('index')
+    hoten = document.getElementById('hoten_' + button_index).value
+    mathe = document.getElementById('div_mathe_' + button_index).innerHTML
+    ngaysinh = document.getElementById('ngaysinh_' + button_index).value
+    console.log(e.target.class)
+    if (e.target.getAttribute("button_type") == "edit") sua_thong_tin_nhan_vien(mathe, hoten, ngaysinh)
+    else xoa_nhan_vien(mathe)
+  }
+
+  buttons = document.getElementsByClassName("action_button");
+  for(i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', button_click)
+  }
+</script>
+</body>
+</html>
