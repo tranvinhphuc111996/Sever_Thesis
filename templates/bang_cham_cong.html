@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style type="text/css">
+        body {
+            background-color: #f6f6ff;
+            font-family: Calibri, Myriad;
+        }
+        
+        #main {
+            width: 780px;
+            padding: 20px;
+            margin: auto;
+        }
+        
+        table.timecard {
+            margin: auto;
+            width: auto;
+            border-collapse: collapse;
+            border: 1px solid rgb(3, 3, 3); /*for older IE*/
+            border-style: hidden;
+        }
+        
+        table.timecard caption {
+            background-color: #f79646;
+            color: #fff;
+            font-size: x-large;
+            font-weight: bold;
+            letter-spacing: .3em;
+        }
+        
+        table.timecard thead th {
+            padding: 8px;
+            background-color: #fde9d9;
+            font-size: large;
+        }
+        
+        table.timecard thead th#thDay {
+            width: 40%;	
+        }
+        
+        table.timecard thead th#thRegular, table.timecard thead th#thOvertime, table.timecard thead th#thTotal {
+            width: 20%;
+        }
+        
+        table.timecard th, table.timecard td {
+            padding: 3px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #f79646 #ccc;
+        }
+        
+        table.timecard td {
+            text-align: center;
+        }
+        
+        table.timecard tbody th {
+            text-align: left;
+            font-weight: normal;
+        }
+        
+        table.timecard tfoot {
+            font-weight: bold;
+            font-size: large;
+            background-color: #687886;
+            color: #fff;
+        }
+        
+        table.timecard tr.even {
+            background-color: #fde9d9;
+        }
+        </style>
+        <title>Bảng chấm công</title>
+        </head>
+
+<body>
+
+	<div>
+	<table id ="bang_cham_cong" class="timecard">
+            <caption>Bảng chấm công</caption>
+    </table>
+    </div>
+
+</body>
+<script>
+    let songaytrongthang =31;
+    let thudautientrongthang = 1;//1 là chủ nhật
+    let sonv = 10;
+
+    let headrow = document.createElement('tr')
+    let stt = document.createElement('th');
+    stt.innerText ="STT";
+    stt.scope="rowgroup"
+    stt.setAttribute("rowspan","3")
+    //stt.rowspan="3";
+    
+    headrow.appendChild(stt)
+
+    let hoten = document.createElement('th');
+    hoten.innerText ="Họ và tên";
+    hoten.scope="rowgroup"
+    hoten.setAttribute("rowspan","3")
+    
+    headrow.appendChild(hoten)
+
+    let chucvubophan = document.createElement('th');
+    chucvubophan.innerText ="Chức vụ/Bộ phận";
+    chucvubophan.scope="rowgroup"
+    chucvubophan.setAttribute("rowspan","3")
+    
+    headrow.appendChild(chucvubophan)
+
+    let ngaytrongthang = document.createElement('th');
+    ngaytrongthang.innerText ="Ngày trong tháng ";
+    ngaytrongthang.colspan=songaytrongthang;
+    ngaytrongthang.scope="colgroup row"
+    ngaytrongthang.setAttribute("colspan",songaytrongthang)
+    headrow.appendChild(ngaytrongthang)
+
+    let tongcong = document.createElement('th');
+    tongcong.innerText ="Tổng cộng giờ công ";
+    tongcong.scope="rowgroup"
+    tongcong.setAttribute("rowspan","3")
+    
+    headrow.appendChild(tongcong)
+
+    document.getElementById("bang_cham_cong").appendChild(headrow)
+
+    let ngay_header = document.createElement('tr')
+    for(let i = 0; i < songaytrongthang; i++)
+    {
+        let temp_ngay = document.createElement('th');
+        temp_ngay.innerText=(i+1);
+        temp_ngay.scope="row col"
+        ngay_header.appendChild(temp_ngay)
+    }
+    document.getElementById("bang_cham_cong").appendChild(ngay_header)
+
+    let thu_header = document.createElement('tr')
+    let thuhientai = thudautientrongthang;
+    for(let i = 0; i < songaytrongthang; i++)
+    {
+        let temp_thu = document.createElement('th');
+        if(thuhientai == 1)
+            temp_thu.innerText="CN";
+        else
+            temp_thu.innerText="T"+thuhientai;
+        temp_thu.scope="row col"
+        thu_header.appendChild(temp_thu)
+        thuhientai++;
+        if(thuhientai==8) thuhientai = 1;
+    }
+    document.getElementById("bang_cham_cong").appendChild(thu_header)
+    
+    for(let i = 0; i < sonv; i++)
+    {
+        let tongcong = 0;
+        let temp_nv = document.createElement('tr')
+        if(i%2==0)
+            temp_nv.className="even"
+        else
+            temp_nv.className="odd"
+
+        let stt_nv = document.createElement('td')
+        stt_nv.innerText = i + 1;
+        stt_nv.scope="row"
+        temp_nv.appendChild(stt_nv)
+
+        let hoten_nv = document.createElement('td')
+        hoten_nv.innerText = "Nguyen Van "+i + 1;
+        hoten_nv.scope="row"
+        temp_nv.appendChild(hoten_nv)
+
+        let chucvu_nv = document.createElement('td')
+        chucvu_nv.innerText = "Lam o"+i + 1;
+        chucvu_nv.scope="row"
+        temp_nv.appendChild(chucvu_nv)
+
+        for(let j = 0; j<(songaytrongthang);j++)
+        {
+            let chamcong_nv = document.createElement('td')
+            chamcong_nv.innerText=j+i;
+            chamcong_nv.scope="row col"
+            tongcong+=j+i;
+            temp_nv.appendChild(chamcong_nv)
+        }
+        let tongcong_nv = document.createElement('td')
+        tongcong_nv.innerText = tongcong;
+        tongcong_nv.scope="row"
+        temp_nv.appendChild(tongcong_nv)
+        document.getElementById("bang_cham_cong").appendChild(temp_nv)
+    }
+
+</script>
+</html>
