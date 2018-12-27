@@ -323,7 +323,9 @@ def register_tag():
 	CardID 			= json_post_data['CardID']
 	post_web_data = json.dumps({"CardID": CardID}) 
 	socketio.emit()
-
+@app.route('/bang_cham_cong', methods=['POST','GET'])
+def bang_cham_cong():
+	return render_template('bang_cham_cong.html')
 	
 	
 

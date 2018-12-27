@@ -54,8 +54,10 @@ body {font-family: Arial;}
   <button class="tablinks" onclick="switch_tab(1)">Danh sách nhân viên</button>
   <!-- <button class="tablinks" onclick="switch_tab(2)">Thêm thiết bị</button> -->
   <button class="tablinks" onclick="switch_tab(3)">Danh sách thiết bị</button>
+
   <button class="tablinks" onclick="switch_tab(4)">Tracking</button>
-  <button class="tablinks" onclick="switch_tab(5)">Đăng xuất</button>
+  <button class="tablinks" onclick="switch_tab(5)">Chấm Công</button>
+  <button class="tablinks" onclick="switch_tab(6)">Đăng xuất</button>
 </div>
 <iframe id="tab_iframe" src="/danh_sach_nhan_vien" height="100%" width="100%" frameborder="0" onload=resizeIframe(this) scrolling="no"></iframe> 
 <script>
@@ -80,6 +82,9 @@ function switch_tab(tabid) {
 
 		case 4:
 			tab_iframe.src 		= "/Tracking"
+		break;
+		case 5:
+			tab_iframe.src 		= "/bang_cham_cong"
 		break;
 		case 6:
 			document.location 	= "/dang_xuat"
