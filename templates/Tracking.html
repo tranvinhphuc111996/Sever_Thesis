@@ -34,8 +34,9 @@
                 cell2.innerHTML = EntryTime;
                 var img = document.createElement('img');
                 img.src = res; 
-                img.setAttribute("width", "300");
-                img.setAttribute("height", "400");
+                img.setAttribute("width", "600");
+                img.setAttribute("height", "450");
+                
                 cell3.appendChild(img);
                 res = "";
                 NameEmploy = null;
@@ -45,7 +46,7 @@
         });
            socket.on('LoadWork_data', function(msg) {
             // console.log(msg)
-            var table = document.getElementById("myTable");
+            var   table = document.getElementById("myTable");
             while (table.rows.length > 1) {
                table.deleteRow(1);
             }
@@ -56,14 +57,19 @@
                 var cell3 = row.insertCell(2);
                 cell1.innerHTML = i.EmployeeName;
                 cell2.innerHTML = i.EntryTime;
+                cell1.style= "text-align"+":"+ "center";
+                cell2.style= "text-align"+":"+ "center";
                 var img = document.createElement('img');
                 var str1 = "/static/image/";
                 var str2 = String(i.ImageID);
                 var str3 = ".jpg";
                 res = str1.concat(str2, str3);
                 img.src = res; 
-                img.setAttribute("width", "300");
-                img.setAttribute("height", "400");
+                img.setAttribute("width", "600");
+                img.setAttribute("height", "450");
+                
+                cell3.style.margin="0"
+                cell3.style.width="600px"
                 cell3.appendChild(img);
                 res = "";
                 NameEmploy = null;
@@ -82,7 +88,7 @@
         <div style="display: flex;align-items: center;justify-content: center;">
             <input id="mydate" type="date"/>
         </div>
-        <table id="myTable" style="width:100%;height:auto;">  
+        <table id="myTable" style="width:100%;height:auto;max-width: 1000px;margin-left: auto;margin-right: auto;">  
             <tr>
                 <th class="centerText">Tên Nhân Viên</th> 
                 <th class="centerText">Thời Gian</th> 

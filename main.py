@@ -19,10 +19,10 @@ sid_clients = []
 
 
 def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+	d = {}
+	for idx, col in enumerate(cursor.description):
+		d[col[0]] = row[idx]
+	return d
 
 def connectdb():
 	conn = sqlite3.connect(DATABASE_FILE, isolation_level = None)
@@ -83,7 +83,7 @@ def scan_the():
 	'''Lay CardID'''
 
 	json_post_data 	= request.get_json()
-	print json_post_data
+	print (json_post_data)
 	DeviceID 		= json_post_data['DeviceID']
 	
 	ImageID			= json_post_data['ImageID']
@@ -107,7 +107,7 @@ def scan_the():
 			
 
 			post_web_data = json.dumps({"NameEmploy": name_string[0]['EmployeeName'],"EntryTime": EntryTime,"ImageID": ImageID})
-			print 'post_web_data:', post_web_data
+			print ('post_web_data:', post_web_data)
 			socketio.emit('my_response', post_web_data , namespace='/tracking')
 			return jsonify(respone)
 		else:
@@ -123,17 +123,17 @@ def scan_the():
 		name_string = querydb(conn, r"SELECT EmployeeName FROM Employee WHERE FingerID=?",(PositionNumber,))
 		print("Finger ID")
 		CardID = 0
-        if len(r2) > 0 :
-            respone = {'status': 1}
-            print("haha")
-            querydb(conn, r"INSERT INTO Work(DeviceID,CardID,FingerID,ImageID,EntryTime) VALUES (?,?,?,?,?)", (DeviceID,CardID,PositionNumber,ImageID,EntryTime, ))
-            # querydb(conn, r"INSERT INTO Work(DeviceID,CardID,ImageID,EntryTime) VALUES (?,?,?,?)", (DeviceID,CardID,ImageID,EntryTime, ))
-           
-            post_web_data = json.dumps({"NameEmploy": name_string[0]['EmployeeName'],"EntryTime": EntryTime,"ImageID": ImageID})
-            print 'post_web_data:', post_web_data
-            socketio.emit('my_response', post_web_data , namespace='/tracking')
-        else:
-        	 respone = {'status' : 0}
+		if len(r2) > 0 :
+			respone = {'status': 1}
+			print("haha")
+			querydb(conn, r"INSERT INTO Work(DeviceID,CardID,FingerID,ImageID,EntryTime) VALUES (?,?,?,?,?)", (DeviceID,CardID,PositionNumber,ImageID,EntryTime, ))
+			# querydb(conn, r"INSERT INTO Work(DeviceID,CardID,ImageID,EntryTime) VALUES (?,?,?,?)", (DeviceID,CardID,ImageID,EntryTime, ))
+		   
+			post_web_data = json.dumps({"NameEmploy": name_string[0]['EmployeeName'],"EntryTime": EntryTime,"ImageID": ImageID})
+			print ('post_web_data:', post_web_data)
+			socketio.emit('my_response', post_web_data , namespace='/tracking')
+		else:
+			 respone = {'status' : 0}
 	conn.commit()
 	conn.close()
 	return jsonify(respone)
@@ -188,20 +188,20 @@ def tracking():
 
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+	return '.' in filename and \
+		   filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/rev_image', methods=['POST', 'GET'])
 def upload_file():
-    if request.method == 'POST':
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            post_web_data = json.dumps({"Image_status":"true"})
-            socketio.emit('image_response', post_web_data , namespace='/tracking')
-            return 'Success'
-    return 'Success'
+	if request.method == 'POST':
+		file = request.files['file']
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			post_web_data = json.dumps({"Image_status":"true"})
+			socketio.emit('image_response', post_web_data , namespace='/tracking')
+			return 'Success'
+	return 'Success'
 
 
 
@@ -366,18 +366,15 @@ def getlocationFromWeb_Register(msg):
 
 @socketio.on('get_id_signal', namespace='/register')
 def getSignalFromWeb_Register():
-   	conn = connectdb()
+	conn = connectdb()
 	result = querydb(conn, r"SELECT Description FROM Device")
-	
-	
-	
 	emit('get_device',result,namespace='/register')
 
-    
+	
 
 @socketio.on('get_id_from_pi')
 def getIdFromPi(msg):
-    print('received json: ' + str(msg))   
+	print('received json: ' + str(msg))   
 
 
 # # Khong biet da lam gi o day

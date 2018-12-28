@@ -20,6 +20,7 @@ body {
 h2 {
 	margin-bottom: 20px;
 	color: #474E69;
+	
 }
 
 /* ===========================
@@ -33,7 +34,7 @@ input, textarea {
 	color: #999999;
 	box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
 	-moz-box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
-	-webkit-box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;		
+	-webkit-box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
 }
 
 textarea {
@@ -41,6 +42,7 @@ textarea {
 	height: 150px;
 	max-width: 400px;
 	line-height: 18px;
+	
 }
 
 input:hover, textarea:hover,
@@ -56,6 +58,7 @@ table, th, td {
 	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 8px;
 	-moz-box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 8px;
 	-webkit-box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 8px;	
+	text-align: center
 }
 
 td, th {
@@ -83,5 +86,6 @@ td, th {
 }
 
 .centerText{
-    text-align: center;
+	text-align: center;
+	
  }

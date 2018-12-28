@@ -4,13 +4,13 @@
 <link rel="stylesheet" href="/static/style.css" type="text/css" media="all" />
 </head>
 <body>
-
+  <div style="text-align: center;">
 <h2>Danh sách thiết bị</h2>
 
-<table style="width:50%">
+<table  style="width:auto;display: inline-block;margin: auto;min-width:600px;">
   <tr>
-    <th class="centerText">Mã thiết bị</th>
-    <th class="centerText">Mô tả</th> 
+    <th class="centerText" style="width:auto;min-width:300px;">Mã thiết bị</th>
+    <th class="centerText" style="width:auto;min-width:300px;">Mô tả</th> 
   </tr>
   {% for thietbi in ds_thietbi %}
   <tr>
@@ -19,5 +19,6 @@
   </tr>
   {% endfor %}
 </table>
+</div>
 </body>
 </html>
