@@ -11,6 +11,22 @@
    ======= Body style ======== 
    =========================== */
 
+  
+  form ol {
+	padding-left: 0;
+  }
+form li, div > p {
+	background: #eee;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	list-style-type: none;
+	border: 1px solid black;
+  }
+form img {
+	height: 64px;
+	order: 1;
+  }
 body {
 	padding: 25px 50px;
 	font-size: 13px;
