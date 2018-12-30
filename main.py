@@ -390,6 +390,9 @@ def getIdFromPi(msg):
 @socketio.on('connect')
 def on_connect():
 	print('Client connected :'+ str(request.sid))
+@socketio.on('connect')
+def on_connect():
+	print('Client connected :'+ str(request.sid))
 
 @socketio.on('GetDate', namespace="/tracking")
 def getdate(msg):
@@ -400,7 +403,7 @@ def getdate(msg):
 	r = querydb(conn, r"SELECT * FROM Work WHERE EntryTimeStamp LIKE ? ",(Check_data,))
 	for row in r :
 
-		if row['CardID'] != '0' and row['FingerID'] == None:
+		if row['CardID'] != '0' and row['FingerID'] == '0':
 			r_name = querydb(conn, r"SELECT EmployeeName FROM Employee WHERE CardID=?  ",(row['CardID'],))
 			if r_name:
 				row.update(r_name[0])
