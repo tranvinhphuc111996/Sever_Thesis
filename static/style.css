@@ -11,6 +11,22 @@
    ======= Body style ======== 
    =========================== */
 
+  
+  form ol {
+	padding-left: 0;
+  }
+form li, div > p {
+	background: #eee;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	list-style-type: none;
+	border: 1px solid black;
+  }
+form img {
+	height: 64px;
+	order: 1;
+  }
 body {
 	padding: 25px 50px;
 	font-size: 13px;
@@ -18,8 +34,9 @@ body {
 }
 
 h2 {
+	
 	margin-bottom: 20px;
-	color: #474E69;
+	color:white;
 	
 }
 
@@ -64,11 +81,12 @@ table, th, td {
 td, th {
 	color: #474E69;
 	padding: 5px;
+	background-color: #FFF
 }
 
 .form label {
 	margin-left: 10px;
-	color: #999999;
+	color: white;
 }
 
 /* ===========================

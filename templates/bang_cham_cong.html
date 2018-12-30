@@ -2,6 +2,9 @@
 
 <html>
 <head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <style type="text/css">
     body {
         background-color: #f6f6ff;
@@ -166,6 +169,10 @@
         else
             temp_nv.className="odd"
 
+        let stt_nv = document.createElement('td')
+        stt_nv.innerText = i + 1;
+        stt_nv.scope="row"
+        temp_nv.appendChild(stt_nv)
 
         let hoten_nv = document.createElement('td')
         hoten_nv.innerText = "Nguyen Van "+i + 1;
@@ -177,9 +184,16 @@
         for(let j = 0; j<(songaytrongthang);j++)
         {
             let chamcong_nv = document.createElement('td')
-            chamcong_nv.innerText=j+i;
+            let SoGio = Math.floor(Math.random() * 9);
+            if(SoGio == 0)
+                SoNgayOff++;
+            else if(SoGio >= 5)
+                SoNgayFull++;
+            else 
+                SoNgayPart++;
+            chamcong_nv.innerText=SoGio;
             chamcong_nv.scope="row col"
-            tongcong+=j+i;
+            tongcong+=SoGio;
             temp_nv.appendChild(chamcong_nv)
         }
         let tongcong_nv = document.createElement('td')
@@ -189,6 +203,55 @@
         x.appendChild(temp_nv)
     }
     document.body.appendChild(para);
+
+    Highcharts.chart('container', {
+        chart: {
+            backgroundColor: {
+            linearGradient: [0, 0, 500, 500],
+            stops: [
+                [0, 'rgb(255, 255, 255)'],
+                [1, 'rgb(200, 200, 255)']
+            ]
+        },
+            type: 'pie'
+        },
+        title: {
+            text: 'Biểu đồ đi làm tháng '+thang+"/2018"
+        },
+        exporting: { enabled: false },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                style: {
+                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                }
+            }
+            }
+        },
+        series: [{
+            name: 'Phần trăm',
+            colorByPoint: true,
+            data: [{
+            name: 'Ngày làm full time',
+            y: (SoNgayFull/(SoNgayFull+SoNgayOff+SoNgayPart))*100,
+            sliced: true,
+            selected: true
+            }, {
+            name: 'Ngày làm part time',
+            y: (SoNgayPart/(SoNgayFull+SoNgayOff+SoNgayPart))*100
+            }, {
+            name: 'Ngày nghỉ',
+            y: (SoNgayOff/(SoNgayFull+SoNgayOff+SoNgayPart))*100
+            }]
+        }]
+    });
 
 </script>
 </html>
