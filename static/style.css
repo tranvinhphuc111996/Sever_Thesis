@@ -80,6 +80,7 @@ table, th, td {
 td, th {
 	color: #474E69;
 	padding: 5px;
+	background-color: #FFF
 }
 
 .form label {
