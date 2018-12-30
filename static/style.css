@@ -34,8 +34,9 @@ body {
 }
 
 h2 {
+	
 	margin-bottom: 20px;
-	color: #474E69;
+	color:white;
 	
 }
 
@@ -85,7 +86,7 @@ td, th {
 
 .form label {
 	margin-left: 10px;
-	color: #999999;
+	color: white;
 }
 
 /* ===========================
