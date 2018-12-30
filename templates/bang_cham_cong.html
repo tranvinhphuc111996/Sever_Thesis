@@ -7,7 +7,6 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <style type="text/css">
         body {
-            background-color: #f6f6ff;
             font-family: Calibri, Myriad;
         }
         
@@ -46,7 +45,9 @@
         table.timecard thead th#thRegular, table.timecard thead th#thOvertime, table.timecard thead th#thTotal {
             width: 20%;
         }
-        
+        table.timecard th{
+            background-color: white
+        }
         table.timecard th, table.timecard td {
             padding: 3px;
             border-width: 1px;
@@ -209,14 +210,19 @@
 
     Highcharts.chart('container', {
         chart: {
-            plotBackgroundColor: null,
-            plotBorderWidth: null,
-            plotShadow: false,
+            backgroundColor: {
+            linearGradient: [0, 0, 500, 500],
+            stops: [
+                [0, 'rgb(255, 255, 255)'],
+                [1, 'rgb(200, 200, 255)']
+            ]
+        },
             type: 'pie'
         },
         title: {
             text: 'Biểu đồ đi làm tháng '+thang+"/2018"
         },
+        exporting: { enabled: false },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
         },
