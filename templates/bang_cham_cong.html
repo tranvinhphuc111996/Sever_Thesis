@@ -79,7 +79,7 @@
 <title>Bảng chấm công</title>
 </head>
 
-<body style="min-height:600px">
+<body style="min-height:900px">
     <h2 style="text-align: center;">Nhập thông tin nhân viên cần xem:</h2>
     <input type="text" style="margin-left: auto;margin-right: auto;display: block;" name="hoten" id="hoten" placeholder="Họ tên nhân viên" />
     <input type="month" style="margin-left: auto;margin-right: auto;display: block;" id="myear" name="myear">
@@ -102,6 +102,8 @@
     let thudautientrongthang
     socket.on("nhan-thong-tin-bang-cham-cong",function(arrayNgay)
     {
+        console.log(arrayNgay);
+        
         drawTableChart(arrayNgay)
     })
     function sendInfomation()
@@ -153,6 +155,8 @@
     }
     function drawTableChart(arrayNgay)
     {
+        
+        
         let sonv = 1;
         let SoNgayFull = 0;
         let SoNgayPart = 0;
@@ -242,11 +246,12 @@
             {
                 let SoGio = 0
                 let chamcong_nv = document.createElement('td')
-                if(parseInt(arrayNgay[count_arrayNgay].day) == j + 1)
-                {
-                    SoGio = arrayNgay[count_arrayNgay].factor
-                    count_arrayNgay++;
-                }
+                if(arrayNgay[count_arrayNgay]!=null)
+                    if(arrayNgay[count_arrayNgay].day == j + 1)
+                    {
+                        SoGio = arrayNgay[count_arrayNgay].factor
+                        count_arrayNgay++;
+                    }
                 if(SoGio == 0)
                     SoNgayOff++;
                 else if(SoGio >= 5)
