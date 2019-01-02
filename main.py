@@ -2,7 +2,8 @@
 
 from flask import Flask, request, jsonify, render_template, session, redirect, escape
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime,timedelta
+import calendar
 import os
 import sqlite3
 from flask_socketio import SocketIO, emit
@@ -403,8 +404,172 @@ def getdate(msg):
 
 	socketio.emit('LoadWork_data', r , namespace='/tracking')
 
-# @socketio.on('bang_cham_cong', namespace = "/cham_cong")
-# def handle_chamcong(msg):
+@socketio.on('gui-thong-tin-bang-cham-cong', namespace = "/cham_cong")
+def handle_chamcong(hotentext,year_get,month_get):
+	conn 			= connectdb()
+	CardID = querydb(conn, r"SELECT CardID FROM Employee WHERE EmployeeName=? ",(str(hotentext),))
+	result_work = []
+	print(CardID)
+	if len(CardID) != 0:
+
+		day_array = []
+
+		
+		data_fromWork = querydb(conn, r"SELECT EntryTime FROM Work WHERE CardID=? ",(CardID[0]['CardID'],))
+		print(data_fromWork)
+		day_work = get_day_work_in_month(int(month_get),data_fromWork)
+		print(day_work)
+		for day in day_work:
+			get_day  = datetime.strptime(str(day), '%H:%M:%S-%d/%m/%Y')
+			if get_day.day in day_array:
+				pass 
+			else:	
+				day_array.append(get_day.day)
+		
+		for day in day_array:
+			time_work = get_time_work_in_day(day,day_work)
+			time_of_phase1 = get_phase1(time_work)
+			time_of_phase2 = get_phase2(time_work)
+			time_of_phase3 = get_phase3(time_work)
+			result_factor = caculate_WorkingTime(time_of_phase1,time_of_phase2,time_of_phase3)
+			result_work.append({"day" : day , "factor" : result_factor})
+	else:
+		print("This is not our Employee")
+	print(result_work)
+	emit('nhan-thong-tin-bang-cham-cong',result_work,namespace='/cham_cong')
 
 
 
+
+def get_day_work_in_month(month,data_fromWork):
+	array_day_work = [] 
+	for Data_val in data_fromWork:
+		datetime_object = datetime.strptime(str(Data_val['EntryTime']), '%H:%M:%S-%d/%m/%Y')
+		if (datetime_object.month == month):
+			array_day_work.append(Data_val['EntryTime'])
+		# fit time 
+	return array_day_work
+def get_time_work_in_day(day,data_fromWork):
+	array_time_in_day_work = [] 
+	for Data_val in data_fromWork:
+		datetime_object = datetime.strptime(str(Data_val), '%H:%M:%S-%d/%m/%Y')
+		if (datetime_object.day == day):
+			array_time_in_day_work.append(Data_val)
+		# fit time 
+	return array_time_in_day_work
+def get_phase1(time_array):
+	time_of_phase1=[]
+	second = 00
+	begin_hourinsession1 = 7 
+	begin_minutesinsession1 = 30
+	end_hourinsession1 = 11
+	end_mininsession1 = 30
+	begin_hourinsession2 = 12
+	begin_minutesinsession2 = 00
+	datetime_object = datetime.strptime(str(time_array[0]), '%H:%M:%S-%d/%m/%Y') 
+	begin_phase1 =str(begin_hourinsession1) + ":" + str(begin_minutesinsession1) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_session1 = datetime.strptime(begin_phase1, '%H:%M:%S-%d/%m/%Y')
+	end_phase1 =str(end_hourinsession1) + ":" + str(end_mininsession1) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_endsession1 = datetime.strptime(end_phase1, '%H:%M:%S-%d/%m/%Y')
+	begin_phase2 =str(begin_hourinsession2) + ":" + str(begin_minutesinsession2) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_session2 = datetime.strptime(begin_phase2, '%H:%M:%S-%d/%m/%Y')
+	for time in time_array:
+		time = datetime.strptime(str(time), '%H:%M:%S-%d/%m/%Y') 
+		if time < compare_session1:
+			time_of_phase1.append(time)
+		# if time > compare_session1 and time < compare_session2:
+		# 	time_of_phase1.append(time)	
+	return time_of_phase1
+
+def get_phase2(time_array):
+	time_of_phase2=[]
+	second = 00
+	end_hourinsession1 = 13
+	end_mininsession1 = 00
+	begin_hourinsession2 = 14
+	begin_minutesinsession2 = 00
+	end_hourinsession2 = 17
+	end_mininsession2 = 00 
+	begin_hourinsession3 = 18
+	begin_minutesinsession3 = 00
+
+	datetime_object = datetime.strptime(str(time_array[0]), '%H:%M:%S-%d/%m/%Y') 
+	end_phase1 =str(end_hourinsession1) + ":" + str(end_mininsession1) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_endsession1 = datetime.strptime(end_phase1, '%H:%M:%S-%d/%m/%Y')
+	begin_phase2 =str(begin_hourinsession2) + ":" + str(begin_minutesinsession2) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	end_phase2 =str(end_hourinsession2) + ":" + str(end_mininsession2) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	
+	begin_phase2 =str(begin_hourinsession2) + ":" + str(begin_minutesinsession2) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_session2 = datetime.strptime(begin_phase2, '%H:%M:%S-%d/%m/%Y')
+	end_phase2 =str(end_hourinsession2) + ":" + str(end_mininsession2) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_endsession2 = datetime.strptime(end_phase2, '%H:%M:%S-%d/%m/%Y')
+	begin_phase3 =str(begin_hourinsession3) + ":" + str(begin_minutesinsession3) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_endsession3 = datetime.strptime(begin_phase3, '%H:%M:%S-%d/%m/%Y')
+	for time in time_array:
+		time = datetime.strptime(time, '%H:%M:%S-%d/%m/%Y') 
+		if time < compare_session2 and time > compare_endsession1:
+			time_of_phase2.append(time)
+		# if time > compare_endsession2 and time < compare_endsession3:
+		# 	time_of_phase2.append(time)	
+	return time_of_phase2
+
+def get_phase3(time_array):
+	time_of_phase3=[]
+	second = 00
+	begin_hourinsession3 = 18
+	begin_minutesinsession3 = 00
+	end_hourinsession3 = 21
+	end_mininsession3 = 00 
+	end_hourinsession2 = 17
+	end_mininsession2 = 00 
+	
+	datetime_object = datetime.strptime(str(time_array[0]), '%H:%M:%S-%d/%m/%Y') 
+	end_phase2 =str(end_hourinsession2) + ":" + str(end_mininsession2) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_endsession2 = datetime.strptime(end_phase2, '%H:%M:%S-%d/%m/%Y')
+	
+	begin_phase3 =str(begin_hourinsession3) + ":" + str(begin_minutesinsession3) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_session3 = datetime.strptime(begin_phase3, '%H:%M:%S-%d/%m/%Y')
+	end_phase3 =str(end_hourinsession3) + ":" + str(end_mininsession3) + ':' + str(second) + "-" + str(datetime_object.day) + "/" + str(datetime_object.month) + "/" + str(datetime_object.year)
+	compare_endsession3 = datetime.strptime(end_phase3, '%H:%M:%S-%d/%m/%Y')
+	for time in time_array:
+		time = datetime.strptime(time, '%H:%M:%S-%d/%m/%Y')
+		# if time < compare_session3 and time > compare_endsession2:
+		# 	time_of_phase3.append(time)
+		if time > compare_endsession3:
+			time_of_phase3.append(time)
+	return time_of_phase3
+def caculate_WorkingTime(time_of_phase1,time_of_phase2,time_of_phase3):
+	non_time = datetime(1990, 1, 1, 0, 0, 0, 0)
+
+	length_time1 = len(time_of_phase1)
+	length_time2 = len(time_of_phase2)
+	length_time3 = len(time_of_phase3)
+	factor_phase1 = 0
+	factor_phase2 = 0
+	factor_phase3 = 0
+	if length_time1 > 0:
+		# workingtime1 = time_of_phase1[len(time_of_phase1)-1] - time_of_phase1[0]
+		workingtime1 = time_of_phase1[0]
+	else:
+		workingtime1 = non_time
+
+	if length_time2 > 0:
+		# workingtime2 = time_of_phase2[len(time_of_phase2)-1] - time_of_phase2[0]
+		workingtime2 = time_of_phase2[0]
+	else:
+		workingtime2 = non_time
+
+	if length_time3 > 0:
+		# workingtime3 = time_of_phase3[len(time_of_phase3)-1] - time_of_phase3[0]
+		workingtime3 = time_of_phase3[0]
+	else:
+		workingtime3 = non_time 
+
+	if (workingtime1 > non_time):
+		factor_phase1 = factor_phase1 + 1
+	if (workingtime2 > non_time):
+		factor_phase2 = factor_phase2 + 1
+	if (workingtime3 > non_time):
+		factor_phase3 = factor_phase3 + 1		
+	Total_factor = factor_phase1 + factor_phase2+factor_phase3
+	return(Total_factor) 
