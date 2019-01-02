@@ -79,177 +79,245 @@
 <title>Bảng chấm công</title>
 </head>
 
-<body>
+<body style="min-height:600px">
     <h2 style="text-align: center;">Nhập thông tin nhân viên cần xem:</h2>
     <input type="text" style="margin-left: auto;margin-right: auto;display: block;" name="hoten" id="hoten" placeholder="Họ tên nhân viên" />
+    <input type="month" style="margin-left: auto;margin-right: auto;display: block;" id="myear" name="myear">
+    <button type="button" style="margin-left: auto;margin-right: auto;display: block;" onclick="sendInfomation()">Submit</button>
+    <div id = "placedraw"> 
+
+    </div>
 
 </body>
 <script>
-   
+    
     var NameEmploy ;
     var EntryTime;
     var namespace = '/cham_cong';
     var socket = io.connect(location.protocol + '//' + 'localhost' + ':' + location.port + namespace);
-    let thang = 12;
-    let songaytrongthang =31;
-    let thudautientrongthang = 1;//1 là chủ nhật
-    let sonv = 1;
-    let SoNgayFull = 0;
-    let SoNgayPart = 0;
-    let SoNgayOff = 0;
-
-    var para = document.createElement('div'); 
-    para.setAttribute("style","visibility: visible")
-    var x = document.createElement("TABLE");
-    x.setAttribute("id", "bang_cham_cong");
-    x.setAttribute("class", "timecard");
-    var table_caption = x.createCaption();
-    table_caption.innerHTML = "<b>Bảng chấm công</b>";
-    para.appendChild(x);
-    let headrow = document.createElement('tr');
-
-    let hoten = document.createElement('th');
-    hoten.innerText ="Họ và tên";
-    hoten.scope="rowgroup"
-    hoten.setAttribute("rowspan","3")
-    
-    headrow.appendChild(hoten)
-
-
-    let ngaytrongthang = document.createElement('th');
-    ngaytrongthang.innerText ="Ngày trong tháng ";
-    ngaytrongthang.colspan=songaytrongthang;
-    ngaytrongthang.scope="colgroup row"
-    ngaytrongthang.setAttribute("colspan",songaytrongthang)
-    headrow.appendChild(ngaytrongthang)
-
-    let tongcong = document.createElement('th');
-    tongcong.innerText ="Tổng cộng giờ công ";
-    tongcong.scope="rowgroup"
-    tongcong.setAttribute("rowspan","3")
-    
-    headrow.appendChild(tongcong)
-
-    x.appendChild(headrow)
-
-    let ngay_header = document.createElement('tr')
-    for(let i = 0; i < songaytrongthang; i++)
+    let hotentext
+    let nam
+    let thang
+    let songaytrongthang
+    let thudautientrongthang
+    socket.on("nhan-thong-tin-bang-cham-cong",function(arrayNgay)
     {
-        let temp_ngay = document.createElement('th');
-        temp_ngay.innerText=(i+1);
-        temp_ngay.scope="row col"
-        ngay_header.appendChild(temp_ngay)
-    }
-    x.appendChild(ngay_header)
-
-    let thu_header = document.createElement('tr')
-    let thuhientai = thudautientrongthang;
-    for(let i = 0; i < songaytrongthang; i++)
+        drawTableChart(arrayNgay)
+    })
+    function sendInfomation()
     {
-        let temp_thu = document.createElement('th');
-        if(thuhientai == 1)
-            temp_thu.innerText="CN";
-        else
-            temp_thu.innerText="T"+thuhientai;
-        temp_thu.scope="row col"
-        thu_header.appendChild(temp_thu)
-        thuhientai++;
-        if(thuhientai==8) thuhientai = 1;
-    }
-    x.appendChild(thu_header)
-    
-
-    // Xuất thog
-    for(let i = 0; i < sonv; i++)
-    {
-        let tongcong = 0;
-        let temp_nv = document.createElement('tr')
-        if(i%2==0)
-            temp_nv.className="even"
-        else
-            temp_nv.className="odd"
-        let hoten_nv = document.createElement('td')
-        hoten_nv.innerText = "Nguyen Van "+i + 1;
-        hoten_nv.scope="row"
-        temp_nv.appendChild(hoten_nv)
-
-
-
-        for(let j = 0; j<(songaytrongthang);j++)
+        hotentext = document.getElementById("hoten").value
+        nam = document.getElementById("myear").value.slice(0,4);
+        thang = document.getElementById("myear").value.slice(-2);
+        let temp = new Date(nam,parseInt(thang)-1)
+        songaytrongthang = 0;
+        thudautientrongthang = temp.getDay()+1;//1 là chủ nhật
+        switch(thang)
         {
-            let chamcong_nv = document.createElement('td')
-            let SoGio = Math.floor(Math.random() * 9);
-            if(SoGio == 0)
-                SoNgayOff++;
-            else if(SoGio >= 5)
-                SoNgayFull++;
-            else 
-                SoNgayPart++;
-            chamcong_nv.innerText=SoGio;
-            chamcong_nv.scope="row col"
-            tongcong+=SoGio;
-            temp_nv.appendChild(chamcong_nv)
+            case "01":
+            case "03":
+            case "05":
+            case "07":
+            case "08":
+            case "10":
+            case "12":
+                    songaytrongthang =31;
+                    break;
+            case "04":
+            case "06":
+            case "09":
+            case "11":
+                    songaytrongthang =30;
+                    break;
+            case "02":
+                    let namInt = parseInt(nam)
+                    if(namInt % 400 == 0)
+                    {
+                        songaytrongthang =29;
+                        break;
+                    }
+                    else if(namInt % 4 == 0 && namInt % 100 !=0)
+                    {
+                        songaytrongthang =29;
+                        break;
+                    }
+                    else
+                    {
+                        songaytrongthang =28;
+                        break;
+                    }
+            default: break;
         }
-        let tongcong_nv = document.createElement('td')
-        tongcong_nv.innerText = tongcong;
-        tongcong_nv.scope="row"
-        temp_nv.appendChild(tongcong_nv)
-        x.appendChild(temp_nv)
+        console.log(hotentext,nam,thang,songaytrongthang,thudautientrongthang)
+        socket.emit("gui-thong-tin-bang-cham-cong",hotentext,nam,thang)
     }
-    document.body.appendChild(para);
-    // <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto;margin-top: 30px;backface-visibility: hidden"></div>
-    var para_chart = document.createElement('div'); 
-    para_chart.setAttribute("id","container");
-    para_chart.setAttribute("style","min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto;margin-top: 30px;backface-visibility: hidden");
-    document.body.appendChild(para_chart);
-    Highcharts.chart('container', {
-        chart: {
-            backgroundColor: {
-            linearGradient: [0, 0, 500, 500],
-            stops: [
-                [0, 'rgb(255, 255, 255)'],
-                [1, 'rgb(200, 200, 255)']
-            ]
-        },
-            type: 'pie'
-        },
-        title: {
-            text: 'Biểu đồ đi làm tháng '+thang+"/2018"
-        },
-        exporting: { enabled: false },
-        tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-        },
-        plotOptions: {
-            pie: {
-            allowPointSelect: true,
-            cursor: 'pointer',
-            dataLabels: {
-                enabled: true,
-                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                style: {
-                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+    function drawTableChart(arrayNgay)
+    {
+        let sonv = 1;
+        let SoNgayFull = 0;
+        let SoNgayPart = 0;
+        let SoNgayOff = 0;
+
+        var para = document.getElementById("placedraw")
+        while(para.firstChild) {
+			para.removeChild(para.firstChild);
+		}
+        para.setAttribute("style","visibility: visible")
+        var x = document.createElement("TABLE");
+        x.setAttribute("id", "bang_cham_cong");
+        x.setAttribute("class", "timecard");
+        var table_caption = x.createCaption();
+        table_caption.innerHTML = "<b>Bảng chấm công</b>";
+        para.appendChild(x);
+        let headrow = document.createElement('tr');
+
+        let hoten = document.createElement('th');
+        hoten.innerText ="Họ và tên";
+        hoten.scope="rowgroup"
+        hoten.setAttribute("rowspan","3")
+        
+        headrow.appendChild(hoten)
+
+
+        let ngaytrongthang = document.createElement('th');
+        ngaytrongthang.innerText ="Ngày trong tháng ";
+        ngaytrongthang.colspan=songaytrongthang;
+        ngaytrongthang.scope="colgroup row"
+        ngaytrongthang.setAttribute("colspan",songaytrongthang)
+        headrow.appendChild(ngaytrongthang)
+
+        let tongcong = document.createElement('th');
+        tongcong.innerText ="Tổng cộng giờ công ";
+        tongcong.scope="rowgroup"
+        tongcong.setAttribute("rowspan","3")
+        
+        headrow.appendChild(tongcong)
+
+        x.appendChild(headrow)
+
+        let ngay_header = document.createElement('tr')
+        for(let i = 0; i < songaytrongthang; i++)
+        {
+            let temp_ngay = document.createElement('th');
+            temp_ngay.innerText=(i+1);
+            temp_ngay.scope="row col"
+            ngay_header.appendChild(temp_ngay)
+        }
+        x.appendChild(ngay_header)
+
+        let thu_header = document.createElement('tr')
+        let thuhientai = thudautientrongthang;
+        for(let i = 0; i < songaytrongthang; i++)
+        {
+            let temp_thu = document.createElement('th');
+            if(thuhientai == 1)
+                temp_thu.innerText="CN";
+            else
+                temp_thu.innerText="T"+thuhientai;
+            temp_thu.scope="row col"
+            thu_header.appendChild(temp_thu)
+            thuhientai++;
+            if(thuhientai==8) thuhientai = 1;
+        }
+        x.appendChild(thu_header)
+        
+
+        // Xuất thog
+        for(let i = 0; i < sonv; i++)
+        {
+            let tongcong = 0;
+            let temp_nv = document.createElement('tr')
+            if(i%2==0)
+                temp_nv.className="even"
+            else
+                temp_nv.className="odd"
+            let hoten_nv = document.createElement('td')
+            hoten_nv.innerText = hotentext;
+            hoten_nv.scope="row"
+            temp_nv.appendChild(hoten_nv)
+            
+            let count_arrayNgay = 0;
+
+            for(let j = 0; j<(songaytrongthang);j++)
+            {
+                let SoGio = 0
+                let chamcong_nv = document.createElement('td')
+                if(parseInt(arrayNgay[count_arrayNgay].day) == j + 1)
+                {
+                    SoGio = arrayNgay[count_arrayNgay].factor
+                    count_arrayNgay++;
                 }
+                if(SoGio == 0)
+                    SoNgayOff++;
+                else if(SoGio >= 5)
+                    SoNgayFull++;
+                else 
+                    SoNgayPart++;
+                chamcong_nv.innerText=SoGio;
+                chamcong_nv.scope="row col"
+                tongcong+=SoGio;
+                temp_nv.appendChild(chamcong_nv)
             }
-            }
-        },
-        series: [{
-            name: 'Phần trăm',
-            colorByPoint: true,
-            data: [{
-            name: 'Ngày làm full time',
-            y: (SoNgayFull/(SoNgayFull+SoNgayOff+SoNgayPart))*100,
-            sliced: true,
-            selected: true
-            }, {
-            name: 'Ngày làm part time',
-            y: (SoNgayPart/(SoNgayFull+SoNgayOff+SoNgayPart))*100
-            }, {
-            name: 'Ngày nghỉ',
-            y: (SoNgayOff/(SoNgayFull+SoNgayOff+SoNgayPart))*100
+            let tongcong_nv = document.createElement('td')
+            tongcong_nv.innerText = tongcong;
+            tongcong_nv.scope="row"
+            temp_nv.appendChild(tongcong_nv)
+            x.appendChild(temp_nv)
+        }
+        // <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto;margin-top: 30px;backface-visibility: hidden"></div>
+        var para_chart = document.createElement('div'); 
+        para_chart.setAttribute("id","container");
+        para_chart.setAttribute("style","min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto;margin-top: 30px;backface-visibility: hidden");
+        para.appendChild(para_chart);
+        Highcharts.chart('container', {
+            chart: {
+                backgroundColor: {
+                linearGradient: [0, 0, 500, 500],
+                stops: [
+                    [0, 'rgb(255, 255, 255)'],
+                    [1, 'rgb(200, 200, 255)']
+                ]
+            },
+                type: 'pie'
+            },
+            title: {
+                text: 'Biểu đồ đi làm tháng '+thang+"/"+nam
+            },
+            exporting: { enabled: false },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+                }
+            },
+            series: [{
+                name: 'Phần trăm',
+                colorByPoint: true,
+                data: [{
+                name: 'Ngày làm full time',
+                y: (SoNgayFull/(SoNgayFull+SoNgayOff+SoNgayPart))*100,
+                sliced: true,
+                selected: true
+                }, {
+                name: 'Ngày làm part time',
+                y: (SoNgayPart/(SoNgayFull+SoNgayOff+SoNgayPart))*100
+                }, {
+                name: 'Ngày nghỉ',
+                y: (SoNgayOff/(SoNgayFull+SoNgayOff+SoNgayPart))*100
+                }]
             }]
-        }]
-    });
+        });
+    }
 
 </script>
 </html>
