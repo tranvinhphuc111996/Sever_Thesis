@@ -10,7 +10,8 @@ CREATE TABLE Employee (
 	EmployeeName nvarchar(1024),
 	EmployeeID varchar(16) PRIMARY KEY,
 	CardID varchar(16),
-	FingerID varchar(16),
+	-- FingerID varchar(16),
+	PicName varchar(50),
 	EmployeeBirthDate DATE
 );
 

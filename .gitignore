@@ -1,2 +1,6 @@
 
 *.jpg
+
+templates/add_pie\.html
+
+main\.pyc

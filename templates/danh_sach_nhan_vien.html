@@ -17,6 +17,7 @@
 
 <table id="myTable", style="width:auto;display: inline-block;margin: auto">
   <tr>
+    <th class="centerText">Ảnh Nhân Viên</th>
     <th class="centerText">Họ tên</th>
     <th class="centerText">Ngày sinh</th>
     <th class="centerText">Mã thẻ</th> 
@@ -24,6 +25,7 @@
   </tr>
   {% for nhanvien in ds_nhanvien %}
   <tr>
+      <td><img id="PicName_{{ loop.index }}" src="static/image_employ/{{ nhanvien['PicName']|safe }}"width="120" height="140" /></td> 
       <td><input type="text" id="hoten_{{ loop.index }}" name="hoten" value="{{ nhanvien['hoten']|safe }}"/></td>
       <td><input type="text" id="ngaysinh_{{ loop.index }}" name="ngaysinh" value="{{ nhanvien['ngaysinh']|safe }}"/></td>
       <td><div id="div_mathe_{{ loop.index }}">{{ nhanvien['mathe']|safe }}</div></td> 

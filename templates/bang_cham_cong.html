@@ -82,24 +82,24 @@
 <body>
     <h2 style="text-align: center;">Nhập thông tin nhân viên cần xem:</h2>
     <input type="text" style="margin-left: auto;margin-right: auto;display: block;" name="hoten" id="hoten" placeholder="Họ tên nhân viên" />
-	<!-- <div>
-        <table id ="bang_cham_cong" class="timecard">
-          <caption>Bảng chấm công</caption>
-        </table>
-    </div> -->
 
 </body>
 <script>
-
+   
     var NameEmploy ;
     var EntryTime;
     var namespace = '/cham_cong';
     var socket = io.connect(location.protocol + '//' + 'localhost' + ':' + location.port + namespace);
+    let thang = 12;
     let songaytrongthang =31;
     let thudautientrongthang = 1;//1 là chủ nhật
-    let sonv = 10;
+    let sonv = 1;
+    let SoNgayFull = 0;
+    let SoNgayPart = 0;
+    let SoNgayOff = 0;
 
     var para = document.createElement('div'); 
+    para.setAttribute("style","visibility: visible")
     var x = document.createElement("TABLE");
     x.setAttribute("id", "bang_cham_cong");
     x.setAttribute("class", "timecard");
@@ -168,12 +168,6 @@
             temp_nv.className="even"
         else
             temp_nv.className="odd"
-
-        let stt_nv = document.createElement('td')
-        stt_nv.innerText = i + 1;
-        stt_nv.scope="row"
-        temp_nv.appendChild(stt_nv)
-
         let hoten_nv = document.createElement('td')
         hoten_nv.innerText = "Nguyen Van "+i + 1;
         hoten_nv.scope="row"
@@ -203,7 +197,11 @@
         x.appendChild(temp_nv)
     }
     document.body.appendChild(para);
-
+    // <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto;margin-top: 30px;backface-visibility: hidden"></div>
+    var para_chart = document.createElement('div'); 
+    para_chart.setAttribute("id","container");
+    para_chart.setAttribute("style","min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto;margin-top: 30px;backface-visibility: hidden");
+    document.body.appendChild(para_chart);
     Highcharts.chart('container', {
         chart: {
             backgroundColor: {

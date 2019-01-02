@@ -13,6 +13,7 @@ app = Flask(__name__, static_url_path='/static')
 app.secret_key = os.urandom(12)
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = './static/image'
+app.config['UPLOAD_FOLDER_IMAGE'] = './static/image_employ'
 socketio = SocketIO(app,async_mode= None)
 sid_clients = []
 
@@ -205,25 +206,6 @@ def upload_file():
 
 
 
-@app.route('/the_moi', methods=['POST', 'GET'])
-def the_moi():
-	#not implemented
-	if not logged_in():
-		return redirect('/dang_nhap')
-	if request.method == 'GET':
-		return render_template('the_moi.html')
-	else:
-		post_data 			= request.form
-		'''TODO
-		kiểm tra mã thẻ hợp lệ
-		'''
-		CardID 				= post_data['mathe'] 
-		EmployeeName 		= escape(post_data['hoten'])
-		EmployeeBirthDate 	= datetime.strptime(post_data['ngaysinh'], '%d-%m-%Y')
-		conn 				= connectdb()
-		r 					= querydb(conn, r"INSERT INTO Employee(EmployeeName, CardID, EmployeeBirthDate) VALUES(?,?,?)", (EmployeeName, CardID, EmployeeBirthDate))
-		return render_template('the_moi.html')
-
 @app.route('/them_nhan_vien', methods=['POST', 'GET'])
 def them_nhan_vien():
 	if not logged_in():
@@ -234,15 +216,21 @@ def them_nhan_vien():
 	else:
 		if request.form['Submit_button'] == 'Register':
 			post_data 			= request.form
+			file = request.files['upanh']
 			'''TODO
 			kiểm tra mã thẻ hợp lệ
 			'''
 			CardID 				= post_data['mathe'] 
+			# FingerID			= post_data['FingerID']
 			EmployeeName 		= escape(post_data['hoten'])
 			EmployeeBirthDate 	= datetime.strptime(post_data['ngaysinh'], '%d-%m-%Y')
 			print(post_data)
 			conn 				= connectdb()
-			r 					= querydb(conn, r"INSERT INTO Employee(EmployeeName, CardID, EmployeeBirthDate) VALUES(?,?,?)", (EmployeeName, CardID, EmployeeBirthDate))
+			r 					= querydb(conn, r"INSERT INTO Employee(EmployeeName, CardID, EmployeeBirthDate,PicName) VALUES(?,?,?,?)", (EmployeeName, CardID,PicName, EmployeeBirthDate,))
+			if file and allowed_file(file.filename):
+				filename = secure_filename(file.filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER_IMAGE'], filename))
+				
 		return render_template('them_nhan_vien.html')
 
 @app.route('/json/xoa_nhan_vien', methods=['POST'])
@@ -295,7 +283,7 @@ def danh_sach_nhan_vien():
 	ds_nhanvien 	= []
 
 	for row in r:
-		ds_nhanvien.append({'hoten': row['EmployeeName'], 'mathe': row['CardID'], 'ngaysinh': row['EmployeeBirthDate']})
+		ds_nhanvien.append({'hoten': row['EmployeeName'], 'mathe': row['CardID'], 'ngaysinh': row['EmployeeBirthDate'],'PicName': row['PicName']})
 	return render_template('danh_sach_nhan_vien.html', ds_nhanvien=ds_nhanvien)
 
 @app.route('/danh_sach_thiet_bi')
@@ -414,4 +402,9 @@ def getdate(msg):
 
 
 	socketio.emit('LoadWork_data', r , namespace='/tracking')
+
+# @socketio.on('bang_cham_cong', namespace = "/cham_cong")
+# def handle_chamcong(msg):
+
+
 
